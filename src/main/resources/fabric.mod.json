@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "chambers",
+  "version": "${version}",
+  "name": "Eternal Chambers",
+  "description": "Adds custom content for the Eternal Chambers Modpack",
+  "authors": [
+	"Calemi",
+	"Ashley",
+	"IWasCool"
+  ],
+  "contact": {
+	"homepage": "https://fabricmc.net/",
+	"sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/chambers/icon.png",
+  "environment": "*",
+  "entrypoints": {
+	"main": [
+	  "com.calemi.chambers.EternalChambers"
+	],
+	"fabric-datagen": [
+	  "com.calemi.chambers.EternalChambersDataGenerator"
+	]
+  },
+  "mixins": [
+	"chambers.mixins.json"
+  ],
+  "depends": {
+	"fabricloader": ">=0.15.9",
+	"minecraft": "~1.20.1",
+	"java": ">=17",
+	"fabric-api": "*",
+	"ccore": ">=1.0.2"
+  },
+  "suggests": {
+	"ftbteams": "*",
+	"jade": "*",
+	"trinkets": "*"
+  }
+}
