@@ -18,10 +18,10 @@
   "environment": "*",
   "entrypoints": {
 	"main": [
-	  "com.calemi.chambers.EternalChambers"
+	  "com.calemi.chambers.main.ChambersMain"
 	],
 	"fabric-datagen": [
-	  "com.calemi.chambers.EternalChambersDataGenerator"
+	  "com.calemi.chambers.datagen.DataGen"
 	]
   },
   "mixins": [
@@ -32,7 +32,7 @@
 	"minecraft": "~1.20.1",
 	"java": ">=17",
 	"fabric-api": "*",
-	"ccore": ">=1.0.2"
+	"ccore": ">=1.0.3"
   },
   "suggests": {
 	"ftbteams": "*",
