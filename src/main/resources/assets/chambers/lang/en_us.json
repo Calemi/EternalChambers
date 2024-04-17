@@ -1,5 +1,18 @@
 {
   "item.chambers.chamber_teleporter": "Chamber Teleporter",
+
+  "item.chambers.meat1": "Meat1",
+  "item.chambers.meat2": "Meat2",
+  "item.chambers.meat3": "Meat3",
+  "item.chambers.meat4": "Meat4",
+  "item.chambers.meat5": "Meat5",
+  "item.chambers.meat6": "Meat6",
+  "item.chambers.meat7": "Meat7",
+  "item.chambers.meat8": "Meat8",
+  "item.chambers.meat9": "Meat9",
+  "item.chambers.meat10": "Meat10",
+  "item.chambers.meat11": "Meat11",
+
   
   "itemgroup.chambers.main": "Eternal Chambers - Main"
 }
