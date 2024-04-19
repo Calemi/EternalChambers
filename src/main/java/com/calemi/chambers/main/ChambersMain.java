@@ -1,12 +1,9 @@
 package com.calemi.chambers.main;
 
+import com.calemi.chambers.api.chamber.ChamberManager;
+import com.calemi.chambers.command.ChamberCommand;
 import com.calemi.chambers.registry.*;
 import net.fabricmc.api.ModInitializer;
-
-import net.kyrptonaught.customportalapi.api.CustomPortalBuilder;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,12 +22,8 @@ public class ChambersMain implements ModInitializer {
 		ScreenHandlerTypeRegistry.init();
 		SoundEventRegistry.init();
 		PacketRegistry.init();
+		ChamberCommand.init();
 
-		CustomPortalBuilder.beginPortal()
-				.frameBlock(Blocks.GOLD_BLOCK)
-				.lightWithItem(Items.GOLD_INGOT)
-				.destDimID(new Identifier(ChambersRef.MOD_ID, "chamber"))
-				.tintColor(0xc76efa)
-				.registerPortal();
+		new ChamberManager();
 	}
 }

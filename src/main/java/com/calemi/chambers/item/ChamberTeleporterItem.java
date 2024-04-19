@@ -1,6 +1,7 @@
 package com.calemi.chambers.item;
 
 import com.calemi.chambers.api.general.TeleportHelper;
+import com.calemi.chambers.main.ChambersMain;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -26,11 +27,11 @@ public class ChamberTeleporterItem extends Item {
         }
 
         if (TeleportHelper.isInChamber(player)) {
-            TeleportHelper.teleportToChamber(player, new BlockPos(0, 100, 0));
+            TeleportHelper.teleportToOverworld(player, new BlockPos(0, 100, 0));
         }
 
         else if (TeleportHelper.isInOverworld(player)) {
-            TeleportHelper.teleportToOverworld(player, new BlockPos(0, 100, 0));
+            TeleportHelper.teleportToChamber(player, new BlockPos(0, 100, 0));
         }
 
         return TypedActionResult.success(stack);

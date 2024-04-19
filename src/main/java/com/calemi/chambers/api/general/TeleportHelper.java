@@ -1,5 +1,6 @@
 package com.calemi.chambers.api.general;
 
+import com.calemi.chambers.main.ChambersMain;
 import com.calemi.chambers.registry.DimensionRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
@@ -47,6 +48,13 @@ public class TeleportHelper {
     }
 
     private static void teleportToWorld(Entity entity, BlockPos dest, ServerWorld destWorld) {
-        entity.teleport(destWorld, dest.getX() + 0.5D, dest.getY(), dest.getZ() + 0.5D, EnumSet.noneOf(PositionFlag.class), entity.getYaw(), entity.getPitch());
+
+        double x = dest.getX() - 0.5D;
+        double z = dest.getZ() - 0.5D;
+
+        if (dest.getX() >= 0) x += 1D;
+        if (dest.getZ() >= 0) z += 1D;
+
+        entity.teleport(destWorld, x, dest.getY(), z, EnumSet.noneOf(PositionFlag.class), entity.getYaw(), entity.getPitch());
     }
 }

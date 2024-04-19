@@ -29,11 +29,11 @@ public class DimensionRegistry {
                 1.0, // coordinateScale
                 true, // bedWorks
                 true, // respawnAnchorWorks
-                -100, // minY
+                0, // minY
                 256, // height
                 256, // logicalHeight
                 BlockTags.INFINIBURN_OVERWORLD, // infiniburn
-                DimensionTypes.THE_NETHER_ID, // effectsLocation
+                DimensionTypes.OVERWORLD_ID, // effectsLocation
                 0.0F, // ambientLight
                 new DimensionType.MonsterSettings(false, false, UniformIntProvider.create(0, 0), 0)));
     }
