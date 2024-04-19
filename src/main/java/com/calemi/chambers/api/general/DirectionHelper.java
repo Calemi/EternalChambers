@@ -25,4 +25,27 @@ public class DirectionHelper {
 
         return BlockRotation.NONE;
     }
+
+    public static BlockRotation getBlockRotation(Direction direction) {
+
+        switch (direction) {
+            case NORTH -> {
+                return BlockRotation.CLOCKWISE_90;
+            }
+
+            case EAST -> {
+                return BlockRotation.CLOCKWISE_180;
+            }
+
+            case SOUTH -> {
+                return BlockRotation.COUNTERCLOCKWISE_90;
+            }
+
+            case WEST -> {
+                return BlockRotation.NONE;
+            }
+        }
+
+        return BlockRotation.NONE;
+    }
 }

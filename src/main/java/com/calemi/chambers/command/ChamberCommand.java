@@ -1,6 +1,7 @@
 package com.calemi.chambers.command;
 
-import com.calemi.chambers.api.chamber.ChamberHelper;
+import com.calemi.chambers.api.chamber.ChamberInstance;
+import com.calemi.chambers.api.chamber.ChamberManager;
 import com.calemi.chambers.api.general.TeleportHelper;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -32,10 +33,24 @@ public class ChamberCommand {
     }
 
     private static void generateChamber(World world, int id) {
-        ChamberHelper.generateChamberTile(world, "room_4", id);
+        ChamberInstance chamberInstance = ChamberManager.singleton.getChamberInstance(id);
+
+        if (chamberInstance == null) {
+            return;
+        }
+
+        chamberInstance.getGenerator().clear();
+        chamberInstance.getGenerator().start();
     }
 
     private static void tpToChamber(ServerPlayerEntity player, int id) {
-        TeleportHelper.teleportToChamber(player, ChamberHelper.getChamberOrigin(id));
+
+        ChamberInstance chamberInstance = ChamberManager.singleton.getChamberInstance(id);
+
+        if (chamberInstance == null) {
+            return;
+        }
+
+        TeleportHelper.teleportToChamber(player, chamberInstance.getGenerator().getChamberOrigin());
     }
 }
