@@ -3,8 +3,9 @@ package com.calemi.chambers.api.chamber;
 import com.calemi.ccore.api.location.Location;
 import com.calemi.chambers.api.general.DirectionHelper;
 import com.calemi.chambers.api.general.StructureHelper;
-import com.calemi.chambers.main.ChambersMain;
 import com.calemi.chambers.registry.DimensionRegistry;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.LecternBlock;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
@@ -85,13 +86,13 @@ public class ChamberGenerator {
 
     private void generationStep(World world) {
 
-        if (currentStep >= 3) {
+        if (currentStep >= 10) {
             status = ChamberGenStatus.READY;
             return;
         }
 
         if (currentStep == 0) {
-            tryGenerateChamberTile(world, getChamberOrigin(), Direction.NORTH);
+            tryGenerateChamberTile(world, BlockPos.ORIGIN, Direction.NORTH);
         }
 
         else {
@@ -104,13 +105,15 @@ public class ChamberGenerator {
             int chosenDoorwayIndex = world.getRandom().nextInt(doorwayCandidates.size());
             ChamberDoorway chosenDoorway = doorwayCandidates.get(0);
 
-            tryGenerateChamberTile(world, getChamberOrigin().add(chosenDoorway.getOffsetPos()), chosenDoorway.getDirection());
+            doorwayCandidates.remove(0);
+            tryGenerateChamberTile(world, chosenDoorway.getOffsetPos(), chosenDoorway.getDirection());
         }
     }
 
-    public boolean tryGenerateChamberTile(World world, BlockPos tilePos, Direction tileDirection) {
+    public boolean tryGenerateChamberTile(World world, BlockPos tileOffset, Direction tileDirection) {
 
         ServerWorld destWorld = world.getServer().getWorld(DimensionRegistry.CHAMBER_LEVEL_KEY);
+        BlockPos tilePos = getChamberOrigin().add(tileOffset);
 
         if (chamberInstance.getID() < 0 || chamberInstance.getID() >= Math.pow((int)(CHAMBER_WORLD_SIZE / CHAMBER_HORIZONTAL_OFFSET), 2)) {
             ChamberManager.singleton.debugLog("ID: " + chamberInstance.getID() + " is out of bounds!");
@@ -125,7 +128,7 @@ public class ChamberGenerator {
             return false;
         }
 
-        List<ChamberDoorway> doorwaysInTile = ChamberGeneratorHelper.findDoorways(world, new StructurePlacementData(), tileStructureTemplate);
+        List<ChamberDoorway> doorwaysInTile = findDoorways(new StructurePlacementData(), tileStructureTemplate);
 
         if (doorwaysInTile.isEmpty()) {
             ChamberManager.singleton.debugLog("No doorways could be found in the Tile!");
@@ -159,24 +162,38 @@ public class ChamberGenerator {
 
 
 
-        List<ChamberDoorway> test = ChamberGeneratorHelper.findDoorways(world, placementData, tileStructureTemplate);
+        List<ChamberDoorway> test = findDoorways(placementData, tileStructureTemplate);
 
         test.remove(chosenDoorwayIndex);
 
         for (ChamberDoorway doorway : test) {
 
-            BlockPos dif = tileLocation.getBlockPos().subtract(getChamberOrigin()).add(1, 0, 1);
+            ChamberManager.singleton.debugLog("Door Offset from Tile " + doorway.getOffsetPos());
 
-            ChamberManager.singleton.debugLog("ORIGIN Door Offset " + dif);
+            BlockPos tileOffsetFromOrigin = tileLocation.getBlockPos().subtract(getChamberOrigin());
+            BlockPos offsetFromOrigin = tileOffsetFromOrigin.add(doorway.getOffsetPos()).add(1, 0, 1);
+            doorway.setOffsetPos(offsetFromOrigin);
 
-            doorway.setOffsetPos(dif.add(doorway.getOffsetPos()));
-            //doorway.getOffsetPos().add(1, -1, -1);
+            ChamberManager.singleton.debugLog("Tile Offset from Origin " + tileOffsetFromOrigin);
             ChamberManager.singleton.debugLog("New Door Offset " + doorway.getOffsetPos());
         }
 
         doorwayCandidates.addAll(test);
 
         return true;
+    }
+
+    public List<ChamberDoorway> findDoorways(StructurePlacementData placementData, StructureTemplate structureTemplate) {
+
+        List<ChamberDoorway> doorways = new ArrayList<>();
+
+        List<StructureTemplate.StructureBlockInfo> structureBlockInfoList = structureTemplate.getInfosForBlock(new BlockPos(0, 0, 0), placementData, Blocks.LECTERN);
+
+        for (StructureTemplate.StructureBlockInfo structureBlockInfo : structureBlockInfoList) {
+            doorways.add(new ChamberDoorway(structureBlockInfo.pos(), structureBlockInfo.state().get(LecternBlock.FACING)));
+        }
+
+        return doorways;
     }
 
     public BlockPos getChamberOrigin() {
