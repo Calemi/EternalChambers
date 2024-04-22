@@ -39,7 +39,8 @@ public class ChambersMain implements ModInitializer {
 		tileSet.getTileSet().add(new WeightedTile(room2, 1));
 		tileSet.getTileSet().add(new WeightedTile(room3, 1));
 		tileSet.getTileSet().add(new WeightedTile(room4, 1));
-		Chamber chamber = new Chamber("test_chamber", tileSet);
+		ChamberSettings settings = new ChamberSettings(5, 15, 3, 6, 2, 5);
+		Chamber chamber = new Chamber("test_chamber", settings, tileSet);
 		ChamberInstance chamberInstance = new ChamberInstance(0, chamber);
 		new ChamberManager(Collections.singletonList(chamberInstance));
 	}

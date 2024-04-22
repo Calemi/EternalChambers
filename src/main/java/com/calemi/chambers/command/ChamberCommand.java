@@ -24,6 +24,13 @@ public class ChamberCommand {
                                     context.getSource().sendFeedback(() -> Text.literal("Generating Chamber..."), false);
                                     return 1;
                                 })))
+                .then(literal("clear")
+                        .then(argument("id", IntegerArgumentType.integer(0, 63))
+                                .executes(context -> {
+                                    clearChamber(context.getSource().getWorld(), IntegerArgumentType.getInteger(context, "id"));
+                                    context.getSource().sendFeedback(() -> Text.literal("Clearing Chamber..."), false);
+                                    return 1;
+                                })))
                 .then(literal("tp")
                         .then(argument("id", IntegerArgumentType.integer(0, 63))
                                 .executes(context -> {
@@ -39,8 +46,18 @@ public class ChamberCommand {
             return;
         }
 
-        chamberInstance.getGenerator().clear();
-        chamberInstance.getGenerator().start();
+        chamberInstance.getGenerator().clear(world);
+        chamberInstance.getGenerator().start(world);
+    }
+
+    private static void clearChamber(World world, int id) {
+        ChamberInstance chamberInstance = ChamberManager.singleton.getChamberInstance(id);
+
+        if (chamberInstance == null) {
+            return;
+        }
+
+        chamberInstance.getGenerator().clear(world);
     }
 
     private static void tpToChamber(ServerPlayerEntity player, int id) {

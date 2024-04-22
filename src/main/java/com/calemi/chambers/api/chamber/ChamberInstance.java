@@ -10,7 +10,7 @@ public class ChamberInstance {
     private Chamber chamber;
 
     public ChamberInstance(int id, Chamber chamber) {
-        generator = new ChamberGenerator(5, this);
+        generator = new ChamberGenerator(this);
         this.id = id;
         this.chamber = chamber;
     }
