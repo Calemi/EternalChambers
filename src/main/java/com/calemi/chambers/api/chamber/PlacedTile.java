@@ -16,11 +16,11 @@ public class PlacedTile {
     private Tile tile;
     private BlockBox bounds;
 
-    private List<Doorway> doors;
+    private List<Doorway> doorways;
 
     public PlacedTile(Tile tile, BlockPos offsetFromOrigin, StructureTemplate template, StructurePlacementData placementData) {
         this.tile = tile;
-        doors = new ArrayList<>();
+        doorways = new ArrayList<>();
 
         bounds = template.calculateBoundingBox(placementData, offsetFromOrigin);
 
@@ -29,12 +29,12 @@ public class PlacedTile {
         for (StructureTemplate.StructureBlockInfo doorBlockInfo : doorBlockInfoList) {
 
             BlockPos doorOffsetFromOrigin = offsetFromOrigin.add(doorBlockInfo.pos()).add(1, 0, 1);
-            doors.add(new Doorway(doorOffsetFromOrigin, doorBlockInfo.state().get(LecternBlock.FACING)));
+            doorways.add(new Doorway(doorOffsetFromOrigin, doorBlockInfo.state().get(LecternBlock.FACING)));
         }
     }
 
-    public List<Doorway> getDoors() {
-        return doors;
+    public List<Doorway> getDoorways() {
+        return doorways;
     }
 
     public void clear(World world, BlockPos origin) {

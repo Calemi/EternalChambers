@@ -1,5 +1,6 @@
 package com.calemi.chambers.api.chamber;
 
+import com.calemi.chambers.main.ChambersMain;
 import com.calemi.chambers.registry.DimensionRegistry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -17,19 +18,25 @@ public class ChamberGenerator {
     private static final float MAX_FAILED_ATTEMPTS = 20;
 
     private ChamberGenStatus status;
-    private int currentStep;
+    private int currentMainStep;
+    private int currentBranchStep;
+    private int currentBranchCount;
 
     private int tileCount;
     private ChamberInstance chamberInstance;
+    private Chamber chamber;
 
     private int mainPathSize;
     private int branchCount;
     private int branchPathSize;
+
     private List<PlacedTile> placedTiles;
+    private PlacedTile currentBranchTile;
 
     public ChamberGenerator(ChamberInstance chamberInstance) {
         status = ChamberGenStatus.CLEAR;
         this.chamberInstance = chamberInstance;
+        this.chamber = chamberInstance.getChamber();
         placedTiles = new ArrayList<>();
     }
 
@@ -47,14 +54,17 @@ public class ChamberGenerator {
             return;
         }
 
-        mainPathSize = chamberInstance.getChamber().getSettings().rollMainPathSize(world.getRandom());
-        branchCount = chamberInstance.getChamber().getSettings().rollBranchCount(world.getRandom());
-        branchPathSize = chamberInstance.getChamber().getSettings().rollBranchPathSize(world.getRandom());
+        mainPathSize = chamber.getSettings().rollMainPathSize(world.getRandom());
+        branchPathSize = chamber.getSettings().rollBranchPathSize(world.getRandom());
+        branchCount = chamber.getSettings().rollBranchCount(world.getRandom());
 
         status = ChamberGenStatus.GENERATING_MAIN;
-        currentStep = 0;
+
+        currentMainStep = 0;
+        currentBranchStep = 0;
+        currentBranchCount = 0;
+
         placedTiles.clear();
-        ChamberManager.singleton.debugLog("RESTART");
     }
 
     public void clear(World world) {
@@ -64,7 +74,7 @@ public class ChamberGenerator {
         }
 
         status = ChamberGenStatus.CLEAR;
-        currentStep = 0;
+        currentMainStep = 0;
     }
 
     public void restart(World world) {
@@ -74,32 +84,37 @@ public class ChamberGenerator {
 
     public void tick(World world) {
 
-        if (!world.getRegistryKey().equals(DimensionRegistry.CHAMBER_LEVEL_KEY)) {
-            return;
-        }
+        if (world.getTime() % (TIME_BETWEEN_STEPS * 60) == 0) {
 
-        if (getStatus() == ChamberGenStatus.GENERATING_MAIN) {
+            if (!world.getRegistryKey().equals(DimensionRegistry.CHAMBER_LEVEL_KEY)) {
+                return;
+            }
 
-            if (world.getTime() % (TIME_BETWEEN_STEPS * 20) == 0) {
-                generationStep(world);
+            if (getStatus() == ChamberGenStatus.GENERATING_MAIN) {
+                genMainStep(world);
+            }
+
+            else if (getStatus() == ChamberGenStatus.GENERATING_BRANCH) {
+                genBranchStep(world);
             }
         }
     }
 
-    private void generationStep(World world) {
+    private void genMainStep(World world) {
 
-        if (currentStep >= mainPathSize) {
-            status = ChamberGenStatus.READY;
+        if (currentMainStep >= mainPathSize) {
+            status = ChamberGenStatus.GENERATING_BRANCH;
             return;
         }
 
-        if (currentStep == 0) {
+        if (currentMainStep == 0) {
 
-            if (!tryGenerateTile(BlockPos.ORIGIN, Direction.NORTH, world, 0)) {
+            if (!tryGenerateTile(chamber.getForm().getStartTileSet(), BlockPos.ORIGIN, Direction.NORTH, world, 0)) {
                 restart(world);
+                return;
             }
 
-            currentStep++;
+            currentMainStep++;
         }
 
         else {
@@ -111,40 +126,115 @@ public class ChamberGenerator {
 
             PlacedTile placedTile = placedTiles.get(placedTiles.size() - 1);
 
-            if (placedTile.getDoors().isEmpty()) {
-                ChamberManager.singleton.debugLog("Step failed! Could not find anymore doors!");
-                return;
-            }
+            Doorway chosenDoorway = getRandomDoorway(world, placedTile);
 
-            int chosenDoorwayIndex = world.getRandom().nextInt(placedTile.getDoors().size());
-            Doorway chosenDoorway = placedTile.getDoors().get(0);
+            TileSet mainPathTileSet = chamber.getForm().getMainPathTileSet();
+            if (currentMainStep == mainPathSize - 1) mainPathTileSet = chamber.getForm().getEndTileSet();
 
-            if (!tryGenerateTile(chosenDoorway.getOffsetPos(), chosenDoorway.getDirection(), world, 0)) {
+            if (!tryGenerateTile(mainPathTileSet, chosenDoorway, world, 0)) {
                 restart(world);
                 return;
             }
 
-            currentStep++;
+            currentMainStep++;
         }
     }
 
-    public boolean tryGenerateTile(BlockPos tileOffset, Direction tileDirection, World world, int tries) {
+    private void genBranchStep(World world) {
+
+        if (currentBranchStep >= branchPathSize) {
+            currentBranchCount++;
+            currentBranchStep = 0;
+            branchPathSize = chamber.getSettings().rollBranchPathSize(world.getRandom());
+            currentBranchTile = null;
+            return;
+        }
+
+        if (currentBranchCount > branchCount) {
+            status = ChamberGenStatus.READY;
+            return;
+        }
+
+        if (currentBranchTile == null) {
+
+            Doorway nonConnectedDoorway = null;
+
+            for (PlacedTile placedTile : placedTiles) {
+
+                Doorway chosenDoorway = getRandomDoorway(world, placedTile);
+
+                if (chosenDoorway != null) {
+                    nonConnectedDoorway = chosenDoorway;
+                    break;
+                }
+            }
+
+            if (nonConnectedDoorway != null) {
+                tryGenerateTile(chamber.getForm().getBranchPathTileSet(), nonConnectedDoorway, world, 0);
+            }
+
+            currentBranchStep++;
+        }
+
+        else {
+
+            Doorway chosenDoorway = getRandomDoorway(world, currentBranchTile);
+
+            if (chosenDoorway != null) {
+                tryGenerateTile(chamber.getForm().getBranchPathTileSet(), chosenDoorway, world, 0);
+            }
+
+            currentBranchStep++;
+        }
+    }
+
+    public boolean tryGenerateTile(TileSet tileset, Doorway doorway, World world, int tries) {
+
+        if (tryGenerateTile(tileset, doorway.getOffsetPos(), doorway.getDirection(), world, tries)) {
+
+            for (PlacedTile placedTile : placedTiles) {
+
+                if (placedTile.getDoorways().remove(doorway)) {
+                    break;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean tryGenerateTile(TileSet tileset, BlockPos tileOffset, Direction tileDirection, World world, int tries) {
 
         if (tries >= MAX_FAILED_ATTEMPTS) {
             ChamberManager.singleton.debugLog("Reached max failed attempts!");
             return false;
         }
 
-        Tile tile = chamberInstance.getChamber().getTileSet().getRandomTile(world.getRandom());
+        Tile tile = tileset.getRandomTile(world.getRandom());
         PlacedTile placedTile = tile.place(getChamberOrigin(), tileOffset, tileDirection, world);
 
         if (placedTile == null) {
-            return tryGenerateTile(tileOffset, tileDirection, world, ++tries);
+            return tryGenerateTile(tileset, tileOffset, tileDirection, world, ++tries);
         }
 
         placedTiles.add(placedTile);
+        currentBranchTile = placedTile;
 
         return true;
+    }
+
+    public Doorway getRandomDoorway(World world, PlacedTile placedTile) {
+
+        List<Doorway> doorways = placedTile.getDoorways();
+
+        if (doorways.isEmpty()) {
+            return null;
+        }
+
+        int chosenDoorwayIndex = world.getRandom().nextInt(placedTile.getDoorways().size());
+        return placedTile.getDoorways().get(chosenDoorwayIndex);
     }
 
     public BlockPos getChamberOrigin() {

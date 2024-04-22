@@ -4,16 +4,12 @@ public class Chamber {
 
     private String name;
     private ChamberSettings settings;
-    private TileSet tileSet;
+    private ChamberForm form;
 
-    public Chamber(String name, ChamberSettings settings, TileSet... tileSets) {
+    public Chamber(String name, ChamberSettings settings, ChamberForm form) {
         this.name = name;
         this.settings = settings;
-        tileSet = new TileSet();
-
-        for (TileSet tileset : tileSets) {
-            this.tileSet.merge(tileset);
-        }
+        this.form = form;
     }
 
     public String getName() {
@@ -24,7 +20,7 @@ public class Chamber {
         return settings;
     }
 
-    public TileSet getTileSet() {
-        return tileSet;
+    public ChamberForm getForm() {
+        return form;
     }
 }

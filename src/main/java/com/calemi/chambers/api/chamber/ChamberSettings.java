@@ -19,7 +19,7 @@ public class ChamberSettings {
         this.branchCountMin = Math.abs(Math.min(branchCountMin, branchCountMax));
         this.branchCountMax = Math.abs(Math.max(branchCountMin, branchCountMax));
         this.branchPathSizeMin = Math.abs(Math.min(branchPathSizeMin, branchPathSizeMax));
-        this.branchPathSizeMax = Math.abs(Math.min(branchPathSizeMin, branchPathSizeMax));
+        this.branchPathSizeMax = Math.abs(Math.max(branchPathSizeMin, branchPathSizeMax));
     }
 
     public int rollMainPathSize(Random random) {

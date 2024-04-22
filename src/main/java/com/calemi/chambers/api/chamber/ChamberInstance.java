@@ -4,15 +4,15 @@ import net.minecraft.world.World;
 
 public class ChamberInstance {
 
-    private ChamberGenerator generator;
-
     private int id;
     private Chamber chamber;
 
+    private ChamberGenerator generator;
+
     public ChamberInstance(int id, Chamber chamber) {
-        generator = new ChamberGenerator(this);
         this.id = id;
         this.chamber = chamber;
+        generator = new ChamberGenerator(this);
     }
 
     public int getID() {

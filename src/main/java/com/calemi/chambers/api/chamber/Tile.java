@@ -83,7 +83,7 @@ public class Tile {
         tileTemplate.place(destWorld, tileLocation.getBlockPos(), new BlockPos(0, 0, 0), placementData, world.getRandom(), 2);
 
         PlacedTile placedTile = new PlacedTile(this, offsetFromOrigin, tileTemplate, placementData);
-        placedTile.getDoors().remove(chosenDoorwayIndex);
+        placedTile.getDoorways().remove(chosenDoorwayIndex);
 
         return placedTile;
     }
