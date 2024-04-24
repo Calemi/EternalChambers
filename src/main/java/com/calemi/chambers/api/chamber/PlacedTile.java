@@ -37,6 +37,18 @@ public class PlacedTile {
         return doorways;
     }
 
+    public Doorway getRandomDoorway(World world) {
+
+        List<Doorway> doorways = getDoorways();
+
+        if (doorways.isEmpty()) {
+            return null;
+        }
+
+        int chosenDoorwayIndex = world.getRandom().nextInt(getDoorways().size());
+        return getDoorways().get(chosenDoorwayIndex);
+    }
+
     public void clear(World world, BlockPos origin) {
 
         int minX = origin.getX() + bounds.getMinX();

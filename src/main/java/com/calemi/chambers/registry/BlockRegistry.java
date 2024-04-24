@@ -1,5 +1,6 @@
 package com.calemi.chambers.registry;
 
+import com.calemi.chambers.block.DoorwayMarkerBlock;
 import com.calemi.chambers.main.ChambersMain;
 import com.calemi.chambers.main.ChambersRef;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -7,9 +8,10 @@ import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
 
 public class BlockRegistry {
+
+    public static final Block PINK_DOORWAY_MARKER = regBlock("pink_doorway_marker", new DoorwayMarkerBlock());
 
     private static Block regBlockSolo(String name, Block block) {
         return Registry.register(Registries.BLOCK, ChambersRef.id(name), block);

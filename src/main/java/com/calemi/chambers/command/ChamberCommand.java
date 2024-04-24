@@ -17,6 +17,7 @@ public class ChamberCommand {
     public static void init() {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(literal("chamber")
+                .requires((s) -> s.hasPermissionLevel(1))
                 .then(literal("generate")
                         .then(argument("id", IntegerArgumentType.integer(0, 63))
                                 .executes(context -> {
@@ -36,7 +37,12 @@ public class ChamberCommand {
                                 .executes(context -> {
                                     tpToChamber(context.getSource().getPlayer(), IntegerArgumentType.getInteger(context, "id"));
                                     return 1;
-                                })))));
+                                })))
+                .then(literal("leave")
+                        .executes(context -> {
+                            leaveChamber(context.getSource().getPlayer());
+                            return 1;
+                        }))));
     }
 
     private static void generateChamber(World world, int id) {
@@ -69,5 +75,9 @@ public class ChamberCommand {
         }
 
         TeleportHelper.teleportToChamber(player, chamberInstance.getGenerator().getChamberOrigin());
+    }
+
+    private static void leaveChamber(ServerPlayerEntity player) {
+        TeleportHelper.teleportToOverworld(player, player.getServer().getOverworld().getSpawnPos());
     }
 }

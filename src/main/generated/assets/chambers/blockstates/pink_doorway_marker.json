@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "chambers:block/pink_doorway_marker",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "chambers:block/pink_doorway_marker"
+    },
+    "facing=south": {
+      "model": "chambers:block/pink_doorway_marker",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "chambers:block/pink_doorway_marker",
+      "y": 270
+    }
+  }
+}

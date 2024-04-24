@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube_directional",
+  "textures": {
+    "down": "chambers:block/pink_doorway_marker_side",
+    "east": "chambers:block/pink_doorway_marker_side",
+    "north": "chambers:block/pink_doorway_marker_front",
+    "particle": "chambers:block/pink_doorway_marker_front",
+    "south": "chambers:block/pink_doorway_marker_back",
+    "up": "chambers:block/pink_doorway_marker_side",
+    "west": "chambers:block/pink_doorway_marker_side"
+  }
+}

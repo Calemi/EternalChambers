@@ -1,6 +1,5 @@
 package com.calemi.chambers.api.chamber;
 
-import com.calemi.chambers.main.ChambersMain;
 import com.calemi.chambers.registry.DimensionRegistry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -17,18 +16,17 @@ public class ChamberGenerator {
     private static final float TIME_BETWEEN_STEPS = 0.1F;
     private static final float MAX_FAILED_ATTEMPTS = 20;
 
-    private ChamberGenStatus status;
-    private int currentMainStep;
-    private int currentBranchStep;
-    private int currentBranchCount;
-
-    private int tileCount;
     private ChamberInstance chamberInstance;
     private Chamber chamber;
 
     private int mainPathSize;
-    private int branchCount;
     private int branchPathSize;
+    private int branchCount;
+
+    private ChamberGenStatus status;
+    private int currentMainStep;
+    private int currentBranchStep;
+    private int currentBranchCount;
 
     private List<PlacedTile> placedTiles;
     private PlacedTile currentBranchTile;
@@ -42,10 +40,6 @@ public class ChamberGenerator {
 
     public ChamberGenStatus getStatus() {
         return status;
-    }
-
-    public int getTileCount() {
-        return tileCount;
     }
 
     public void start(World world) {
@@ -126,7 +120,7 @@ public class ChamberGenerator {
 
             PlacedTile placedTile = placedTiles.get(placedTiles.size() - 1);
 
-            Doorway chosenDoorway = getRandomDoorway(world, placedTile);
+            Doorway chosenDoorway = placedTile.getRandomDoorway(world);
 
             TileSet mainPathTileSet = chamber.getForm().getMainPathTileSet();
             if (currentMainStep == mainPathSize - 1) mainPathTileSet = chamber.getForm().getEndTileSet();
@@ -161,7 +155,7 @@ public class ChamberGenerator {
 
             for (PlacedTile placedTile : placedTiles) {
 
-                Doorway chosenDoorway = getRandomDoorway(world, placedTile);
+                Doorway chosenDoorway = placedTile.getRandomDoorway(world);
 
                 if (chosenDoorway != null) {
                     nonConnectedDoorway = chosenDoorway;
@@ -178,7 +172,7 @@ public class ChamberGenerator {
 
         else {
 
-            Doorway chosenDoorway = getRandomDoorway(world, currentBranchTile);
+            Doorway chosenDoorway = currentBranchTile.getRandomDoorway(world);
 
             if (chosenDoorway != null) {
                 tryGenerateTile(chamber.getForm().getBranchPathTileSet(), chosenDoorway, world, 0);
@@ -223,18 +217,6 @@ public class ChamberGenerator {
         currentBranchTile = placedTile;
 
         return true;
-    }
-
-    public Doorway getRandomDoorway(World world, PlacedTile placedTile) {
-
-        List<Doorway> doorways = placedTile.getDoorways();
-
-        if (doorways.isEmpty()) {
-            return null;
-        }
-
-        int chosenDoorwayIndex = world.getRandom().nextInt(placedTile.getDoorways().size());
-        return placedTile.getDoorways().get(chosenDoorwayIndex);
     }
 
     public BlockPos getChamberOrigin() {

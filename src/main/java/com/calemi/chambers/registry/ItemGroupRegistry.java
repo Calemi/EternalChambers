@@ -14,7 +14,18 @@ public class ItemGroupRegistry {
 
     public static final ItemGroup CHAMBERS_MAIN = Registry.register(Registries.ITEM_GROUP, ChambersRef.id(ChambersRef.MOD_ID),
             FabricItemGroup.builder().displayName(Text.translatable("itemgroup.chambers.main")).icon(() -> new ItemStack(Items.NETHERITE_SWORD)).entries((displayContext, entries) -> {
-
+                entries.add(BlockRegistry.PINK_DOORWAY_MARKER);
+                entries.add(ItemRegistry.MEAT_1);
+                entries.add(ItemRegistry.MEAT_2);
+                entries.add(ItemRegistry.MEAT_3);
+                entries.add(ItemRegistry.MEAT_4);
+                entries.add(ItemRegistry.MEAT_5);
+                entries.add(ItemRegistry.MEAT_6);
+                entries.add(ItemRegistry.MEAT_7);
+                entries.add(ItemRegistry.MEAT_8);
+                entries.add(ItemRegistry.MEAT_9);
+                entries.add(ItemRegistry.MEAT_10);
+                entries.add(ItemRegistry.MEAT_11);
     }).build());
 
     public static void init() {
